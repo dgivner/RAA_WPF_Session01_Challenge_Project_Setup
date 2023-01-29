@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>RAA_WPF_Session01_Challenge_Project_Setup</Text>
+    <Description>Some description for RAA_WPF_Session01_Challenge_Project_Setup</Description>
+    <Assembly>RAA_WPF_Session01_Challenge_Project_Setup.dll</Assembly>
+    <FullClassName>RAA_WPF_Session01_Challenge_Project_Setup.Command</FullClassName>
+    <ClientId>a06684a8-194d-4a82-9384-3e2effa32678</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>RAA_WPF_Session01_Challenge_Project_Setup</Name>
+    <Assembly>RAA_WPF_Session01_Challenge_Project_Setup.dll</Assembly>
+    <FullClassName>RAA_WPF_Session01_Challenge_Project_Setup.App</FullClassName>
+    <ClientId>d6ec8666-2fe6-4bd7-a753-b699936f2cb1</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+</RevitAddIns>
