@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,6 +72,8 @@ namespace RAA_WPF_Session01_Challenge_Project_Setup
                 return rb1.Content.ToString();
             else if (rb2.IsChecked == true)
                 return rb2.Content.ToString();
+            return null;
         }
+
     }
 }

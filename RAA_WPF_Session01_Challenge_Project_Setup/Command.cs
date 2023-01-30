@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using Microsoft.Win32;
 
 #endregion
 
@@ -123,13 +124,13 @@ namespace RAA_WPF_Session01_Challenge_Project_Setup
         }
         private static string OpenFile()
         {
-            MyWindow.OpenFileDialog selectFile = new MyWindow().OpenFileDialog();
+            OpenFileDialog selectFile = new OpenFileDialog();
             selectFile.InitialDirectory = "C:\\";
             selectFile.Filter = "CSV Files|*.csv";
             selectFile.Multiselect = false;
 
             string fileName = "";
-            if (selectFile.ShowDialog() == MyWindow.DialogResult.OK)
+            if (selectFile.ShowDialog() == true)
             {
                 fileName = selectFile.FileName;
             }
