@@ -61,7 +61,9 @@
     <Compile Include="Classes\ButtonDataClass.cs" />
     <Compile Include="Classes\dLevels.cs" />
     <Compile Include="Classes\dSheets.cs" />
-    <Compile Include="Command.cs" />
+    <Compile Include="Command.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

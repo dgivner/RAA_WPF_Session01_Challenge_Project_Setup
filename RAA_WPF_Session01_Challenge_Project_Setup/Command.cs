@@ -31,10 +31,56 @@ namespace RAA_WPF_Session01_Challenge_Project_Setup
             tblockCollector.OfCategory(BuiltInCategory.OST_TitleBlocks);
             ElementId tblockId = tblockCollector.FirstElementId();
 
-            var fileName = OpenFile();
+            //var fileName = OpenFile();
 
-            FilteredElementCollector viewTemplateCollector = new FilteredElementCollector(doc);
-            viewTemplateCollector.OfClass(typeof(ViewTemplateApplicationOption));
+            //FilteredElementCollector viewTemplateCollector = new FilteredElementCollector(doc);
+            //viewTemplateCollector.OfClass(typeof(ViewTemplateApplicationOption));
+
+            // open form
+            MyWindow currentWindow = new MyWindow()
+            {
+                Width = 800,
+                Height = 450,
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
+                Topmost = true,
+            };
+
+            currentWindow.ShowDialog();
+
+            if (currentWindow.DialogResult == false)
+            {
+                return Result.Cancelled;
+            }
+
+            //do something
+            List<string[]> dataList = new List<string[]>();
+            string textboxresult = currentWindow.GetTextBoxValue();
+
+            // get form data and do something
+            string[] dataArray = System.IO.File.ReadAllLines(textboxresult);
+            foreach (string data in dataArray)
+            {
+                string[] cellString = data.Split(',');
+                dataList.Add(cellString);
+            }
+
+            dataList.RemoveAt(0);
+
+            bool checkBox1Value = currentWindow.GetCheckbox1();
+
+            string radioButtonValue = currentWindow.GetGroup1();
+
+            //TaskDialog.Show("Test", "text box result is " + textboxresult);
+
+            if (checkBox1Value == true)
+            {
+                TaskDialog.Show("Test", "Check box 1 was selected");
+            }
+
+            TaskDialog.Show("Test", radioButtonValue);
+
+
+            //go through csv data and do something
 
 
             FilteredElementCollector vftCollector = new FilteredElementCollector(doc);
@@ -52,74 +98,79 @@ namespace RAA_WPF_Session01_Challenge_Project_Setup
             using (Transaction tx = new Transaction(doc))
             {
 
-                tx.Start("Project Setup");
-                foreach (var level in LevelsList())
+                tx.Start("Create Level");
+                foreach (string[] currentArray in dataList)
                 {
-                    Level newLevel = Level.Create(doc, level.Elevation);
-                    newLevel.Name = level.Name;
+                    string text = currentArray[0];
+                    string number = currentArray[1];
 
-                    ViewPlan newPlanVIew = ViewPlan.Create(doc, planVFT.Id, newLevel.Id);
-                    ViewPlan newCeilingPlan = ViewPlan.Create(doc, rcpVFT.Id, newLevel.Id);
+                    double actualNumber;
+                    bool convertNumber = double.TryParse(number, out actualNumber);
+                    if (convertNumber == false)
+                    {
+                        continue;
+                    }
 
-                    newPlanVIew.Name = newPlanVIew.Name + "Floor Plan";
-                    newCeilingPlan.Name = newCeilingPlan.Name = "RCP";
+                    double actualNumber2 = 0;
+                    try
+                    {
+                        actualNumber2 = double.Parse(number);
+                    }
+                    catch (Exception e)
+                    {
+                        TaskDialog.Show("Error", "This item in the number column is not a number.");
+                    }
 
-                    ViewSheet newSheet = ViewSheet.Create(doc, tblockId);
-                    ViewSheet newCeilingSheet = ViewSheet.Create(doc, tblockId);
+                    if (convertNumber == false)
+                    {
+                        TaskDialog.Show("Error", "This item in the number column is not a number.");
+                    }
 
-                    XYZ insertPoint = new XYZ(2, 1, 0);
-                    XYZ secondInsertPoint = new XYZ(0, 1, 0);
+                    double metricConvert = actualNumber * 3.28084;
+                    Level currentLevel = Level.Create(doc, metricConvert);
+                    currentLevel.Name = text;
 
-                    Viewport newViewport = Viewport.Create(doc, newSheet.Id, newPlanVIew.Id, insertPoint);
-                    Viewport newCeilingViewport = Viewport.Create(doc, newCeilingSheet.Id, newCeilingPlan.Id, secondInsertPoint);
+                    ViewFamilyType floorPlanVFT = GetViewFamilyTypeByName(doc, "Floor Plan", ViewFamily.FloorPlan);
+                    ViewFamilyType ceilingPlanVFT =
+                        GetViewFamilyTypeByName(doc, "Ceiling Plan", ViewFamily.CeilingPlan);
+
+                    ViewPlan plan = ViewPlan.Create(doc, planVFT.Id,currentLevel.Id);
+                    ViewPlan ceilingPlan = ViewPlan.Create(doc, rcpVFT.Id, currentLevel.Id);
+
+
                 }
+                //foreach (var level in LevelsList())
+                //{
+                //    Level newLevel = Level.Create(doc, level.Elevation);
+                //    newLevel.Name = level.Name;
 
-                foreach (var sheet in SheetList())
-                {
-                    ViewSheet newSheet = ViewSheet.Create(doc, tblockId);
-                    newSheet.Name = sheet.Name;
-                    newSheet.SheetNumber = sheet.Number;
-                }
+                //    ViewPlan newPlanVIew = ViewPlan.Create(doc, planVFT.Id, newLevel.Id);
+                //    ViewPlan newCeilingPlan = ViewPlan.Create(doc, rcpVFT.Id, newLevel.Id);
+
+                //    newPlanVIew.Name = newPlanVIew.Name + "Floor Plan";
+                //    newCeilingPlan.Name = newCeilingPlan.Name = "RCP";
+
+                    //ViewSheet newSheet = ViewSheet.Create(doc, tblockId);
+                    //ViewSheet newCeilingSheet = ViewSheet.Create(doc, tblockId);
+
+                    //XYZ insertPoint = new XYZ(2, 1, 0);
+                    //XYZ secondInsertPoint = new XYZ(0, 1, 0);
+
+                    //Viewport newViewport = Viewport.Create(doc, newSheet.Id, newPlanVIew.Id, insertPoint);
+                    //Viewport newCeilingViewport = Viewport.Create(doc, newCeilingSheet.Id, newCeilingPlan.Id, secondInsertPoint);
+                //}
+
+                //foreach (var sheet in SheetList())
+                //{
+                //    ViewSheet newSheet = ViewSheet.Create(doc, tblockId);
+                //    newSheet.Name = sheet.Name;
+                //    newSheet.SheetNumber = sheet.Number;
+                //}
 
                 tx.Commit();
                 tx.Dispose();
 
             }
-
-            // put any code needed for the form here
-
-            // open form
-            MyWindow currentWindow = new MyWindow()
-            {
-                Width = 800,
-                Height = 450,
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
-                Topmost = true,
-            };
-
-            currentWindow.ShowDialog();
-
-            if(currentWindow.DialogResult == false)
-            {
-                return Result.Cancelled;
-            }
-            // get form data and do something
-            string textboxresult = currentWindow.GetTextBoxValue();
-
-            bool checkBox1Value = currentWindow.GetCheckbox1();
-
-            string radioButtonValue = currentWindow.GetGroup1();
-
-            TaskDialog.Show("Test", "text box result is " + textboxresult);
-
-            if (checkBox1Value == true)
-            {
-                TaskDialog.Show("Test", "Check box 1 was selected");
-            }
-
-            TaskDialog.Show("Test", radioButtonValue);
-
-
             return Result.Succeeded;
         }
         private static string OpenFile()
@@ -228,14 +279,14 @@ namespace RAA_WPF_Session01_Challenge_Project_Setup
             return null;
         }
 
-        private ViewFamilyType GetViewFamilyTypeByName(Document doc, string vftName, ViewFamily vf)
+        private ViewFamilyType GetViewFamilyTypeByName(Document doc, string typeName, ViewFamily viewFamily)
         {
             FilteredElementCollector collector = new FilteredElementCollector(doc);
             collector.OfClass(typeof(ViewFamilyType));
 
             foreach (ViewFamilyType currentVFT in collector)
             {
-                if (currentVFT.Name == vftName && currentVFT.ViewFamily == vf)
+                if (currentVFT.Name == typeName && currentVFT.ViewFamily == viewFamily)
                 {
                     return currentVFT;
                 }
@@ -257,6 +308,24 @@ namespace RAA_WPF_Session01_Challenge_Project_Setup
             }
 
             return null;
+        }
+        public static String GetMethod()
+        {
+            var method = MethodBase.GetCurrentMethod().DeclaringType?.FullName;
+            return method;
+        }
+    }
+    
+    internal class ViewStruct
+    {
+        public string Name;
+        public string Discipline;
+        public string Level;
+        public ViewStruct(string name, string discipline, string level)
+        {
+            Name = name;
+            Discipline = discipline;
+            Level = level;
         }
     }
 }
